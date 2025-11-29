@@ -21,6 +21,8 @@ learning technique that optimizes long-term retention.
 ### ⏱️ **Time Tracking & Analytics**
 
 - **On-page timer widget**: Tracks solve time for every problem
+- **Draggable widget**: Move anywhere on screen, position saves automatically
+- **Adjustable opacity**: 20-100% transparency slider for minimal distraction
 - **Auto-confidence suggestions**: Pre-selects confidence level based on your solve time
 - **Performance analytics**: View fastest/slowest solves, average times, and trends
 - **Submission history**: Complete log of all attempts with timestamps
@@ -120,7 +122,7 @@ The extension pulls problems from a Google Sheet. You have two options:
 1. **Create a new Google Sheet** with these exact column names (case-insensitive):
 
    | url | title | difficulty | topic | pattern | phase |
-      |-----|-------|------------|-------|---------|-------|
+         |-----|-------|------------|-------|---------|-------|
    | https://leetcode.com/problems/two-sum/ | Two Sum | Easy | Array | Basic Operations | PHASE 1 |
    | https://leetcode.com/problems/add-two-numbers/ | Add Two Numbers | Medium | Linked List | Traversal | PHASE 1 |
 
@@ -191,7 +193,9 @@ When you submit a problem, the extension will **auto-suggest** a confidence leve
 
 ### **On LeetCode Problem Pages**
 
-When you open any LeetCode problem, you'll see a **Practice Tracker widget** in the bottom-right corner:
+When you open any LeetCode problem, you'll see a **Practice Tracker widget** (default: bottom-right corner):
+
+**Using the Widget:**
 
 1. **Click "Start"** when you begin solving
 2. **Timer runs** — you can pause/resume anytime
@@ -201,6 +205,12 @@ When you open any LeetCode problem, you'll see a **Practice Tracker widget** in 
     - **High**: Solved with minor issues
     - **Medium**: Needed hints or struggled
     - **Low**: Couldn't solve or heavily relied on solutions
+
+**Customizing the Widget:**
+
+- **Move**: Click and drag the header to any position (saves automatically)
+- **Adjust opacity**: Use the slider at the bottom (20-100% transparency)
+- Both settings persist across pages
 
 The extension will:
 
@@ -330,9 +340,9 @@ This prevents "review avalanches" and keeps your workload manageable!
 
 ### **What is it?**
 
-The Smart Problem Editor is your command center for fixing mistakes and fine-tuning your progress. Think of it as the "undo/redo" feature for your LeetCode journey. Whether the timer widget glitched out or you realized you should've rated yourself differently after some reflection, the editor has your back.
-
-The best part? It's **smart** — you just tweak the basics (time, confidence), and it handles all the complex SRS math automatically. Everything stays in perfect sync.
+The Smart Problem Editor lets you manually update problem progress when the timer widget fails or you need to fix
+mistakes. It's **intelligent** — you only edit what matters (time), and everything else is automatically recalculated
+using the same SRS algorithm.
 
 ### **How to Access**
 
@@ -341,114 +351,75 @@ The best part? It's **smart** — you just tweak the basics (time, confidence), 
 
 ### **What You Can Edit**
 
-1. ✅ **Time** for each attempt (in minutes)
-2. ✅ **Confidence** for each attempt (auto or manual override)
-3. ✅ **Date/timestamp** of each attempt
-4. ✅ **Delete** individual attempts
-5. ✅ **Add** new attempts manually
-6. ✅ **Reset** problem to "Not Started" (nuclear option - deletes everything)
-
-### **Auto vs Manual Confidence**
-
-Here's where it gets cool. For each attempt, you can choose:
-
-**Auto Mode** (default):
-- The editor calculates confidence based on your time and difficulty
-- Change time from 5 to 45 minutes → confidence automatically updates from "Mastered" to "Low"
-- Uses your time thresholds from Settings
-
-**Manual Override**:
-- You pick the confidence yourself from a dropdown
-- Maybe you took 45 minutes but felt super confident → select "High"
-- Maybe you solved in 10 minutes but had to look up the pattern → select "Medium"
-- Sometimes the time doesn't tell the whole story, y'know?
-
-You can switch between auto and manual anytime. The "Auto" option even shows you what it *would* calculate, so you can compare.
-
-### **Live Preview Magic**
-
-This is the part I'm most proud of. As you edit **anything** in the editor, you see the results **instantly**:
-
-- Change time → Stats update in real-time
-- Change confidence → Stats update in real-time  
-- Add attempt → Stats update in real-time
-- Delete attempt → Stats update in real-time
-
-No "save and pray" — you see exactly what's going to happen before you commit. It's like having a time machine preview.
+1. ✅ **Time** for each attempt (in minutes, clearly labeled)
+2. ✅ **Date/timestamp** of each attempt
+3. ✅ **Delete** individual attempts
+4. ✅ **Add** new attempts manually
+5. ✅ **Reset** problem to "Not Started" (deletes all progress)
 
 ### **What's Auto-Calculated**
 
-Click **"Save & Recalculate"** and the editor computes:
+When you click **"Save & Recalculate"**, the editor automatically computes:
 
-- ✅ **Confidence** (if you're on auto mode)
-- ✅ **SRS Stage** (replays all attempts through the algorithm)
-- ✅ **Next Review Date** (with smart load balancing)
+- ✅ **Confidence level** (based on time + difficulty + your time thresholds)
+- ✅ **SRS Stage** (replays all attempts through SRS algorithm)
+- ✅ **Next Review Date** (with load balancing)
 - ✅ **Lapses** (number of failures)
 - ✅ **Consecutive Successes** (for leech forgiveness)
 - ✅ **Leech Status** (🩸 tag)
-- ✅ **Stage and Interval** for each attempt
 
-### **Real-World Usage Examples**
+### **Usage Examples**
 
-#### **Scenario 1: "Oh crap, the timer broke"**
+#### **Scenario 1: Timer Widget Failed**
 
-You spent 25 minutes on a problem but the widget never started:
+You started a problem but the timer didn't work properly:
 
-1. Open editor, search for the problem
+1. Open the editor and search for the problem
 2. Click **"+ Add New Attempt"**
-3. Enter "25" minutes
-4. Watch it auto-calculate confidence to "Medium"
-5. Or manually override to "High" if you felt good about it
-6. Save
-7. ✅ Like it never happened!
+3. Enter the time you actually spent (e.g., "25" minutes)
+4. Watch the confidence automatically update (e.g., "MEDIUM")
+5. Click **"Save & Recalculate"**
+6. ✅ Everything recalculated correctly!
 
-#### **Scenario 2: "I was too hard on myself"**
+#### **Scenario 2: Logged Wrong Time**
 
-You logged a problem as "Low" but after sleeping on it, you realized you actually understood it well:
+You accidentally submitted with the wrong time:
 
 1. Search for the problem
-2. Find that attempt
-3. Change confidence dropdown from "Auto (low)" to "High"
-4. Watch your SRS stage jump from 1 to 3 (instant preview!)
-5. Save
-6. ✅ Fixed without messing up your streak
+2. Find the attempt with the incorrect time
+3. Change "5" to "45" minutes
+4. Watch confidence change from "MASTERED" to "LOW" (live preview!)
+5. Click **"Save & Recalculate"**
+6. ✅ SRS stage, lapses, review date all updated automatically
 
-#### **Scenario 3: "Wrong time, my bad"**
+#### **Scenario 3: Accidental Submission**
 
-You finished in 45 minutes but accidentally logged 5:
-
-1. Find the problem
-2. Change "5" to "45" minutes  
-3. Watch confidence change from "Mastered" to "Low" in real-time
-4. See your next review date shift from 2 weeks out to tomorrow
-5. Save
-6. ✅ Back on track
-
-#### **Scenario 4: "I want to start over on this problem"**
-
-You have 5 messy attempts and just want a clean slate:
+You submitted by mistake or want to remove an attempt:
 
 1. Find the problem
-2. Click **"Mark as Not Started"**
-3. Confirm
-4. ✅ Problem reset, ready for a fresh attempt
+2. Click the **✕** button on the wrong attempt
+3. Click **"Save & Recalculate"**
+4. ✅ Problem recalculated as if that attempt never happened
 
-### **How It Works Under the Hood**
+### **How It Works**
 
-The editor uses something called **event sourcing** (fancy term, simple concept):
+The editor uses **event sourcing** — it treats your attempts as a sequence of events:
 
-1. Takes all your attempts as raw inputs (date, time, maybe confidence)
-2. Deletes all the calculated stuff (stage, lapses, etc.)
-3. Replays your attempts **in order** through the same SRS algorithm the timer widget uses
-4. Recalculates everything from scratch
+1. Takes all your attempts with their times
+2. Auto-calculates confidence for each based on time thresholds
+3. Replays them **in order** through the SRS algorithm
+4. Arrives at the correct final state
 
-This guarantees 100% consistency — no weird edge cases, no drift between the timer and editor. They literally use the same code (`srsEngine.js`).
+This guarantees **100% consistency** between the editor and the timer widget — they use the exact same code!
 
-### **The Philosophy**
+### **Live Preview**
 
-Manual confidence override breaks a rule I originally had: "confidence must always come from time." But here's the thing — sometimes you need to override the math. Maybe you're having a bad day. Maybe you got interrupted. Maybe the problem clicked 30 minutes in but you still took 60.
+As you type a time value, the confidence level updates **instantly** so you can see what will happen before you save:
 
-So now you get both: auto-calculation for consistency, manual override for when life happens. The editor is here to help you stay honest with yourself while giving you the flexibility to tell your own story.
+- Type "10" min on an Easy problem → Shows "MASTERED"
+- Type "35" min on an Easy problem → Shows "LOW"
+
+No guessing needed!
 
 ---
 
@@ -560,32 +531,6 @@ prevent confusion.
 2. Make sure at least one day is checked
 3. If all days are unchecked, the extension defaults to all days
 
-### **Stats not updating when I edit in the editor**
-
-This was a bug in earlier versions. Make sure you have the latest version with live preview:
-
-1. Make any change (time, confidence, add/delete attempt)
-2. Stats should update **immediately** (before you save)
-3. If they don't, you might be on an old version — reload the extension
-
-### **Confidence stuck on "Auto" or wrong value**
-
-If you're editing an old attempt and the confidence dropdown doesn't seem right:
-
-1. The dropdown shows "Auto (suggestion)" if no manual override is set
-2. If you want to override, just select any other option
-3. If you want pure auto-calculation, keep "Auto" selected
-4. The "(suggestion)" text updates as you change time
-
-### **Popup doesn't refresh after editing**
-
-The latest version has auto-refresh! If your popup isn't updating:
-
-1. Make sure you have the updated `popup.js` and `dashboard.js`
-2. These files listen for storage changes and auto-refresh
-3. You should see "Problems updated in storage, refreshing popup..." in console
-4. If not, manually click "Refresh List" or close/reopen popup
-
 ---
 
 ## 📂 File Structure
@@ -593,23 +538,21 @@ The latest version has auto-refresh! If your popup isn't updating:
 ```
 leetcode_extension/
 ├── manifest.json          # Extension configuration
-├── srsEngine.js           # ⭐ Shared SRS calculation engine (used by both timer & editor)
-├── background.js          # Service worker (imports srsEngine.js)
+├── srsEngine.js           # Shared SRS calculation logic (NEW)
+├── background.js          # Service worker (uses srsEngine.js)
 ├── contentScript.js       # Timer widget injected on LeetCode pages
 ├── popup.html             # Extension popup UI
-├── popup.js               # Popup logic (auto-refreshes on storage changes)
+├── popup.js               # Popup logic (filtering, rendering)
 ├── settings.html          # Settings page UI
 ├── settings.js            # Settings logic (save/load, reset)
-├── editor.html            # ⭐ Smart problem editor UI with manual confidence
-├── editor.js              # ⭐ Editor logic with live preview (uses srsEngine.js)
+├── editor.html            # Smart problem editor UI (NEW)
+├── editor.js              # Editor logic (uses srsEngine.js) (NEW)
 ├── dashboard.html         # Analytics dashboard UI
-├── dashboard.js           # Dashboard logic (charts, stats, auto-refresh)
+├── dashboard.js           # Dashboard logic (charts, stats)
 ├── style.css              # Unified styles
 ├── chart.min.js           # Chart.js library (for graphs)
 └── icon.png               # Extension icon
 ```
-
-**⭐ = Files updated in recent version with manual confidence override & live preview**
 
 ---
 
@@ -663,21 +606,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Chart.js** for beautiful graphs
 - **LeetCode** for the amazing platform
 - **Google Sheets** for free, easy data hosting
-- **Claude (Anthropic)** for being an incredible development partner — this entire extension was built collaboratively with Claude's help, from architecture decisions to debugging gnarly edge cases
-
-### **A Note on Development**
-
-This extension was built with the help of Claude AI. Not in a "generate boilerplate code" way, but as a genuine collaborative process. Every feature, every bug fix, every design decision was discussed, debugged, and refined together.
-
-Some highlights:
-- Claude helped architect the shared `srsEngine.js` to keep timer widget and editor perfectly in sync
-- We spent hours debugging why confidence wasn't recalculating (turns out, removing `if (!attempt.confidence)` was breaking manual overrides)
-- The live preview feature? That was Claude's idea after noticing the inconsistency between "Delete" showing previews but "Add" not doing so
-- The "Auto vs Manual" confidence system came from a back-and-forth about whether users should be able to override time-based calculations
-
-Building with AI wasn't about replacing the thinking — it was about having a tireless pair-programming partner who could spot edge cases, suggest better approaches, and write clean code at 3 AM when my brain was mush.
-
-If you're learning to code or building your own projects, I highly recommend trying this collaborative approach. It's like having a senior engineer who never gets tired of explaining things.
 
 ---
 
