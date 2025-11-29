@@ -1,3 +1,6 @@
+// Import shared SRS engine
+importScripts('srsEngine.js');
+
 // Default settings (including default sheet URL)
 const DEFAULT_SETTINGS = {
   sheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQNlOGHAZnG-51FtCEeJdG6WLCwlZXM6yE0WL2glIP9t8MJA00XSraGJy5-8GheEglFSSjokeo3NY0X/pub?output=csv',
@@ -236,146 +239,60 @@ if (request.action === 'submitAttempt') {
     const { url, time, confidence } = request.data;
 
     chrome.storage.local.get(['problems', 'settings']).then(data => {
-            const problems = data.problems || [];
-            const settings = data.settings || DEFAULT_SETTINGS;
+        const problems = data.problems || [];
+        const settings = data.settings || DEFAULT_SETTINGS;
 
-            // Normalize URLs by removing trailing slashes for comparison
-            const normalizeUrl = (urlStr) => urlStr.replace(/\/$/, '');
-            const problemIndex = problems.findIndex(p => normalizeUrl(p.url) === normalizeUrl(url));
+        // Normalize URLs by removing trailing slashes for comparison
+        const normalizeUrl = (urlStr) => urlStr.replace(/\/$/, '');
+        const problemIndex = problems.findIndex(p => normalizeUrl(p.url) === normalizeUrl(url));
 
-            if (problemIndex !== -1) {
-                const problem = problems[problemIndex];
+        if (problemIndex !== -1) {
+            const problem = problems[problemIndex];
 
-                // Save state for undo
-                const undoState = {
-                    problemUrl: url,
-                    previousState: JSON.parse(JSON.stringify(problem)),
-                    timestamp: Date.now()
-                };
+            // Save state for undo
+            const undoState = {
+                problemUrl: url,
+                previousState: JSON.parse(JSON.stringify(problem)),
+                timestamp: Date.now()
+            };
 
-                // Update status
-                problem.status = 'Solved';
+            // Create new attempt object
+            const now = new Date();
+            const newAttempt = {
+                date: now.toISOString(),
+                time,
+                confidence,
+                stage: 0, // Will be set by SRS engine
+                interval: 0 // Will be set by SRS engine
+            };
 
-                // Calculate new stage based on confidence
-                let newStage = problem.srsStage || 0;
-
-                if (confidence === 'low') {
-                    // Reset to stage 1 (not 0, give them a small boost)
-                    newStage = 1;
-
-                    // Increment lapses if they've attempted before
-                    if (problem.attempts && problem.attempts.length > 0) {
-                        problem.lapses = (problem.lapses || 0) + 1;
-                    }
-                    problem.consecutiveSuccesses = 0;
-
-                } else if (confidence === 'medium') {
-                    // FIX ISSUE 2: Medium at Stage 0 advances to Stage 1
-                    if (newStage === 0) {
-                        // First time, give them a boost
-                        newStage = 1;
-                    } else if (newStage >= 2) {
-                        // At higher stages, drop back one
-                        newStage = newStage - 1;
-                    }
-                    // At Stage 1, stay at Stage 1
-                    problem.consecutiveSuccesses = 0;
-
-                } else { // high or mastered
-                    // Advance one stage (but not above max)
-                    newStage = Math.min(newStage + 1, settings.maxStage);
-
-                    // Track consecutive successes for leech forgiveness
-                    problem.consecutiveSuccesses = (problem.consecutiveSuccesses || 0) + 1;
-
-                    // Forgive lapses after 3 consecutive successes
-                    if (problem.consecutiveSuccesses >= 3) {
-                        problem.lapses = 0;
-                        problem.consecutiveSuccesses = 0;
-                    }
-                }
-
-// Calculate interval with exponential backoff and cap
-// Calculate interval with exponential backoff and cap
-                const exponentialInterval = settings.baseInterval *
-                                           Math.pow(settings.growthFactor, newStage);
-                const cappedInterval = Math.min(exponentialInterval, settings.maxInterval);
-                let intervalDays = Math.round(cappedInterval);
-
-                // SMART LOAD BALANCING: Find a day with capacity
-                const MAX_REVIEWS_PER_DAY = settings.maxDailyReviews || 15;
-                let attempts = 0;
-                let foundSlot = false;
-                let candidateDate = null;
-
-                while (attempts < 14 && !foundSlot) {
-                    candidateDate = getNextReviewDate(intervalDays + attempts, settings.studyDays);
-
-                    // Double-check this is actually a study day
-                    const candidateDayOfWeek = new Date(candidateDate + 'T00:00:00').getDay();
-                    if (!settings.studyDays[candidateDayOfWeek]) {
-                        attempts++;
-                        continue; // Skip non-study days
-                    }
-
-                    // Count how many problems already due on this date
-                    const reviewsOnDate = problems.filter(p =>
-                        p.nextReviewDate === candidateDate &&
-                        normalizeUrl(p.url) !== normalizeUrl(url)
-                    ).length;
-
-                    if (reviewsOnDate < MAX_REVIEWS_PER_DAY) {
-                        foundSlot = true;
-                    } else {
-                        attempts++;
-                    }
-                }
-
-                // If all days full (unlikely), fallback
-                if (!foundSlot) {
-                    candidateDate = getNextReviewDate(intervalDays + Math.floor(Math.random() * 3), settings.studyDays);
-                }
-
-                // Final date (already validated as study day)
-                const nextDate = candidateDate;
-
-                // Update problem
-                problem.srsStage = newStage;
-                problem.nextReviewDate = nextDate;
-                problem.lastConfidence = confidence;
-
-                // Check if it's a leech
-                problem.isLeech = (problem.lapses >= settings.leechThreshold &&
-                                  problem.srsStage < 3);
-
-                // Add attempt to history
-                const now = new Date();
-                problem.attempts.push({
-                    date: now.toISOString(),
-                    time,
-                    confidence,
-                    stage: newStage,
-                    interval: intervalDays
-                });
-
-                // Save everything
-                chrome.storage.local.set({
-                    problems,
-                    lastUndo: undoState
-                }).then(() => {
-                    sendResponse({ success: true });
-                });
-
-                // Clear undo after 5 minutes
-                setTimeout(() => {
-                    chrome.storage.local.remove('lastUndo');
-                }, 5 * 60 * 1000);
+            // Add attempt to history
+            if (!problem.attempts) {
+                problem.attempts = [];
             }
-            else{
-                // Problem not found
-                sendResponse({ success: false, error: 'Problem not found' });
-            }
-        });
-        return true;
-    }
+            problem.attempts.push(newAttempt);
+
+            // Use SRS engine to process this attempt
+            SRSEngine.processAttempt(problem, newAttempt, settings, problems);
+
+            // Save everything
+            chrome.storage.local.set({
+                problems,
+                lastUndo: undoState
+            }).then(() => {
+                sendResponse({ success: true });
+            });
+
+            // Clear undo after 5 minutes
+            setTimeout(() => {
+                chrome.storage.local.remove('lastUndo');
+            }, 5 * 60 * 1000);
+        }
+        else{
+            // Problem not found
+            sendResponse({ success: false, error: 'Problem not found' });
+        }
+    });
+    return true;
+}
 });

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Problem Editor - LeetCode Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .editor-container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .search-section {
+            margin-bottom: 20px;
+            padding: 16px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        #problem-search {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+
+        #search-results {
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            background-color: #ffffff;
+        }
+
+        .search-result-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #e9ecef;
+            transition: background-color 0.2s;
+        }
+
+        .search-result-item:hover {
+            background-color: #e7f3ff;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 4px;
+        }
+
+        .result-meta {
+            font-size: 11px;
+            color: #6c757d;
+        }
+
+        .editor-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .editor-section.active {
+            display: block;
+        }
+
+        .action-buttons {
+            margin-top: 24px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .current-problem-info {
+            padding: 12px;
+            background-color: #e7f3ff;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .current-problem-info h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: #004085;
+        }
+
+        .current-problem-info a {
+            color: #007bff;
+            font-size: 12px;
+        }
+
+        .stats-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .stat-card {
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #007bff;
+        }
+
+        .attempts-section {
+            margin-top: 24px;
+            padding: 16px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .attempts-list {
+            margin-top: 12px;
+        }
+
+        .attempt-item {
+            display: grid;
+            grid-template-columns: 180px 120px auto 60px;
+            gap: 10px;
+            padding: 10px;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .attempt-item input {
+            padding: 6px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .time-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .time-input-wrapper input {
+            flex: 1;
+        }
+
+        .time-input-wrapper span {
+            font-size: 11px;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        .confidence-display {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .confidence-low { background-color: #f8d7da; color: #721c24; }
+        .confidence-medium { background-color: #fff3cd; color: #856404; }
+        .confidence-high { background-color: #d4edda; color: #155724; }
+        .confidence-mastered { background-color: #cce5ff; color: #004085; }
+
+        .delete-attempt-btn {
+            padding: 4px 8px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .delete-attempt-btn:hover {
+            background-color: #c82333;
+        }
+
+        .add-attempt-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .add-attempt-btn:hover {
+            background-color: #218838;
+        }
+
+        .help-text {
+            margin-top: 12px;
+            padding: 10px;
+            background-color: #fff3cd;
+            border-left: 3px solid #ffc107;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #856404;
+        }
+
+        .status-section {
+            margin-top: 20px;
+            padding: 16px;
+            background-color: #fff3cd;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .status-section h3 {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            color: #856404;
+        }
+
+        .status-section button {
+            margin-right: 10px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="editor-container">
+    <h1>📝 Smart Problem Editor</h1>
+    <p style="color: #6c757d; font-size: 13px; margin-bottom: 20px;">
+        Edit times and add/remove attempts. Everything else is automatically recalculated using SRS logic.
+    </p>
+
+    <!-- Search Section -->
+    <div class="search-section">
+        <input
+                type="text"
+                id="problem-search"
+                placeholder="Search for a problem by name or paste LeetCode URL..."
+        >
+        <div id="search-results"></div>
+    </div>
+
+    <!-- Editor Section -->
+    <div id="editor-section" class="editor-section">
+        <div class="current-problem-info">
+            <h3 id="current-problem-title">No problem selected</h3>
+            <a id="current-problem-link" href="#" target="_blank">View on LeetCode</a>
+        </div>
+
+        <!-- Progress Stats (READ-ONLY) -->
+        <div class="stats-display">
+            <div class="stat-card">
+                <div class="stat-label">Status</div>
+                <div class="stat-value" id="stat-status" style="font-size: 14px;">Not Started</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">SRS Stage</div>
+                <div class="stat-value" id="stat-stage">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Next Review</div>
+                <div class="stat-value" id="stat-next-review" style="font-size: 14px;">N/A</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Last Confidence</div>
+                <div class="stat-value" id="stat-confidence" style="font-size: 14px;">None</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Lapses</div>
+                <div class="stat-value" id="stat-lapses">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Attempts</div>
+                <div class="stat-value" id="stat-attempts">0</div>
+            </div>
+        </div>
+
+        <!-- Attempts Section (EDITABLE) -->
+        <div class="attempts-section">
+            <h3>📊 Submission History (Edit Time Only)</h3>
+            <p class="help-text">
+                💡 <strong>How it works:</strong> Change the time for any attempt, and confidence will be auto-calculated
+                based on your time thresholds.
+                All SRS metrics (stage, lapses, next review) are recalculated automatically when you save.
+            </p>
+            <div class="attempts-list" id="attempts-list">
+                <!-- Attempts will be inserted here -->
+            </div>
+            <button class="add-attempt-btn" id="add-attempt-btn">+ Add New Attempt</button>
+        </div>
+
+        <!-- Status Management -->
+        <div class="status-section">
+            <h3>⚙️ Status Management</h3>
+            <button class="danger-btn" id="reset-btn">🔄 Mark as "Not Started" (Delete All Progress)</button>
+            <p style="margin-top: 8px; font-size: 11px; color: #856404;">
+                This will erase all attempts and reset the problem to its initial state.
+            </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="primary-btn" id="save-btn">💾 Save & Recalculate</button>
+            <button class="secondary-btn" id="cancel-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script src="srsEngine.js"></script>
+<script src="editor.js"></script>
+</body>
+</html>
