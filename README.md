@@ -57,7 +57,7 @@ learning technique that optimizes long-term retention.
 1. **Download the extension files**
     - Clone this repository or download as ZIP
    ```bash
-   git clone https://github.com/yourusername/leetcode-tracker.git
+    https://github.com/arun-gg-1996/leetflow.git
    ```
 
 2. **Open Chrome Extensions page**
