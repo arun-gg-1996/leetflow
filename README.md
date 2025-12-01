@@ -124,6 +124,9 @@ The extension pulls problems from a Google Sheet. You have two options:
 | url | title | difficulty | topic | pattern | phase |
 |-----|-------|------------|-------|---------|-------|
 | https://leetcode.com/problems/two-sum/ | Two Sum | Easy | Array | Basic Operations | PHASE 1 |
+
+
+
    **Required columns:**
     - `url`: Full LeetCode problem URL
     - `title`: Problem name
