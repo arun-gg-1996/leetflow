@@ -57,7 +57,7 @@ learning technique that optimizes long-term retention.
 1. **Download the extension files**
     - Clone this repository or download as ZIP
    ```bash
-   git clone https://github.com/yourusername/leetcode-tracker.git
+    https://github.com/arun-gg-1996/leetflow.git
    ```
 
 2. **Open Chrome Extensions page**
@@ -121,10 +121,11 @@ The extension pulls problems from a Google Sheet. You have two options:
 
 1. **Create a new Google Sheet** with these exact column names (case-insensitive):
 
-   | url | title | difficulty | topic | pattern | phase |
-         |-----|-------|------------|-------|---------|-------|
-   | https://leetcode.com/problems/two-sum/ | Two Sum | Easy | Array | Basic Operations | PHASE 1 |
-   | https://leetcode.com/problems/add-two-numbers/ | Add Two Numbers | Medium | Linked List | Traversal | PHASE 1 |
+| url | title | difficulty | topic | pattern | phase |
+|-----|-------|------------|-------|---------|-------|
+| https://leetcode.com/problems/two-sum/ | Two Sum | Easy | Array | Basic Operations | PHASE 1 |
+
+
 
    **Required columns:**
     - `url`: Full LeetCode problem URL
